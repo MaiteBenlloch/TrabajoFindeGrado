@@ -12,7 +12,7 @@
 # Output:         Density plots comparing original and simulated data,
 #                 summary of KS test statistics (D and p-value).
 #
-# Dependencies:   edgeR, tidyverse
+# Dependencies:   edgeR, tidyverse, ggplot2, dplyr, tidyr
 #
 # Usage Example:  
 #   result <- analyze_dataset(counts_matrix, "Title of Dataset")
