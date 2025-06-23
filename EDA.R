@@ -14,7 +14,7 @@
 #                 barplots of SQANTI structural categories.
 #
 # Dependencies:   tidyverse, reshape2, ggplot2, writexl, fitdistrplus, dplyr,
-#                 patchwork, RColorBrewer
+#                 patchwork, RColorBrewer, scales
 #
 # Usage Example:  
 #   # Load count matrices and run analysis as shown in the script
