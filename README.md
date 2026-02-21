@@ -1,172 +1,175 @@
-This repository contains a comprehensive RNA-seq analysis framework developed as part of a Bachelor’s Thesis.
+This repository contains a **comprehensive RNA-seq analysis framework** developed as part of a **Bachelor’s Thesis**. 
 
-The project focuses on:
+The project focuses on:  
+- **Exploratory Data Analysis (EDA)** of RNA-seq count matrices 
+- **Statistical distribution fitting** (**Poisson**, **Negative Binomial**, **Gamma**) with model selection via **AIC** 
+- **Simulation of biological replicates** using multiple modeling strategies (**DESeq2**, **edgeR**, custom mean–variance models) 
+- **Sparsity** and **intensity analysis** of gene expression
+- **Differential expression simulation** with realistic **biological noise** 
+- **Model validation** using **density plots** and **Kolmogorov–Smirnov tests** 
 
-Exploratory Data Analysis (EDA) of RNA-seq count matrices
+The datasets include **brain** and **kidney** samples sequenced using:  
+- **Oxford Nanopore Technologies (ONT)** 
+- **PacBio IsoSeq** 
 
-Statistical distribution fitting (Poisson, Negative Binomial, Gamma)
+***
 
-Simulation of biological replicates using multiple modeling strategies
+## Repository structure
 
-Sparsity and intensity analysis
+| Script | Description |
+|--------|------------|
+| **EDA.R** | **Exploratory data analysis** and **distribution fitting** for RNA-seq count matrices. |
+| **DESeq2.R** | **Biological replicate simulation** using **DESeq2**’s Negative Binomial model. |
+| **MOSim.R** | **Custom simulation** using **mean–variance modeling** (Poisson and Negative Binomial).  |
+| **metrics_analysis.R** | Expression metrics comparison (**intensity**, **variability**, **sparsity**). |
+| **negativebin_model.R** | Simulation using **edgeR-based Negative Binomial** model with tagwise dispersion. |
+| **simulate_DE_noise.R** | **Differential expression simulation** with **biological noise** for benchmarking DE pipelines.  |
 
-Differential expression simulation with biological noise
+***
 
-Model validation using density plots and Kolmogorov–Smirnov tests
+## Script descriptions
 
-The datasets include brain and kidney samples sequenced using:
+### **EDA.R**
 
-Oxford Nanopore Technologies (ONT)
+Performs full **exploratory analysis** of RNA-seq count matrices.  
 
-PacBio IsoSeq
+**Features**  
+- Imports **ONT** and **IsoSeq** count matrices (brain and kidney).  
+- Replaces **NA values** with 0 and rounds counts.  
+- Calculates **percentage of zero counts** per replicate (sparsity).  
+- Generates **density plots** of log10-transformed counts.  
+- Fits **Poisson**, **Negative Binomial**, and **Gamma** distributions to gene counts. 
+- Selects the **best-fitting model using AIC**.  
+- Exports results as **Excel files**.  
+- Visualizes **SQANTI structural transcript categories**.  
 
-Repository Structure
-Script	Description
-EDA.R	Exploratory data analysis and distribution fitting
-DESeq2.R	Biological replicate simulation using DESeq2
-MOSim.R	Custom simulation using mean–variance modeling
-metrics_analysis.R	Expression metrics comparison (intensity, variability, sparsity)
-negativebin_model.R	Simulation using edgeR-based Negative Binomial model
-simulate_DE_noise.R	Differential expression simulation with biological noise
+**Outputs**  
+- Zero-percentage **barplots**.  
+- **Density distribution** plots.  
+- Excel files with **AIC comparison**.  
+- **SQANTI** category stacked barplots.  
 
-Script Descriptions
-1.  EDA.R
+***
 
-Performs full exploratory analysis of RNA-seq count matrices.
-Features
-Imports ONT and IsoSeq count matrices (Brain & Kidney)
-Replaces NA values with 0 and rounds counts
-Calculates percentage of zero counts per replicate
-Generates density plots (log10 scale)
-Fits statistical distributions:
-Poisson
-Negative Binomial
-Gamma
-Selects best model using AIC
-Exports results as Excel files
-Visualizes SQANTI structural transcript categories
+### **DESeq2.R — DESeq2 approach**
 
-Outputs:
-Zero-percentage barplots
-Density distribution plots
-Excel files with AIC comparison
-SQANTI category stacked barplots
+Simulates **biological replicates** using **dispersion** and **size factor** estimates from **DESeq2**’s Negative Binomial model.
 
-2. DESeq2.R — DESeq2 Approach
+**Workflow**  
+1. Create a **DESeqDataSet** object.  
+2. Estimate **size factors**.  
+3. Estimate **dispersion**.  
+4. Simulate new replicates via **Negative Binomial sampling**.  
 
-Simulates biological replicates using dispersion and size factor estimates from DESeq2.
+**Comparison**  
+- Compares **mean** and **variance** distributions between real and simulated data using **overlaid histograms** (log10 scale).  
 
-Workflow
+**Dependency**  
+- **DESeq2 (Bioconductor)**. 
 
-Create DESeqDataSet
-Estimate size factors
-Estimate dispersion
-Simulate new replicates using Negative Binomial sampling
+***
 
-Compare:
-Mean distributions
-Variance distributions
-Visualize results using overlaid histograms (log10 scale)
+### **MOSim.R — Mean–variance modeling approach**
 
-Dependency
-DESeq2 (Bioconductor)
+Implements a **custom simulation method** based on a **mean–variance power-law relationship**. 
 
-3. MOSim.R — Mean–Variance Modeling Approach
+**Features**  
+- Estimates **variance** from mean expression.  
+- Uses **Poisson** distribution for low variance and **Negative Binomial** for overdispersed genes. 
+- Simulates **biological replicates**.  
+- Compares **real vs simulated distributions** via density plots.  
 
-Custom simulation method based on a mean–variance power-law relationship.
+This provides a **simplified parametric alternative** to **DESeq2** and **edgeR** simulation strategies. 
 
-Features
-Estimates variance from mean expression
-Uses:
-Poisson distribution (low variance)
-Negative Binomial distribution (overdispersion)
-Simulates biological replicates
-Compares real vs simulated distributions via density plots
-This approach provides a simplified parametric alternative to DESeq2 and edgeR.
+***
 
-4. metrics_analysis.R
+### **metrics_analysis.R**
 
-Computes expression quality metrics and compares real vs simulated datasets.
+Computes **expression quality metrics** and compares **real vs simulated** datasets.  
 
-Metrics Computed
-Intensity → Mean normalized expression per gene
-Variability → Variance across replicates
-Sparsity (global) → % of zero counts
-Sparsity (per gene)
-Sparsity (per sample)
+**Metrics computed**  
+- **Intensity** → mean normalized expression per gene.  
+- **Variability** → variance across replicates.  
+- **Sparsity (global)** → percentage of zero counts.  
+- **Sparsity (per gene)**.  
+- **Sparsity (per sample)**.  
 
-Visualizations
-Scatter plot (Intensity Original vs Simulated)
-Boxplots (Variability)
-Violin plots (Sparsity per gene)
-Boxplots (Sparsity per sample)
-2D density plots (Intensity vs Sparsity)
+**Visualizations**  
+- **Scatter plot** (Intensity: original vs simulated).  
+- **Boxplots** (variability).  
+- **Violin plots** (sparsity per gene).  
+- **Boxplots** (sparsity per sample).  
+- **2D density plots** (intensity vs sparsity).  
 
-5. negativebin_model.R — edgeR Approach
+***
 
-Simulates biological replicates using dispersion estimated from edgeR.
+### **negativebin_model.R — edgeR approach**
 
-Workflow
-Estimate tagwise dispersion (edgeR)
-Generate Negative Binomial replicates
-Adjust dropout to match real sparsity
+Simulates **biological replicates** using **dispersion estimated from edgeR**.
 
-Compare distributions:
-Density plots
-Per-replicate facet plots
-Violin plots
-Perform Kolmogorov–Smirnov test:
-Reports D statistic
-Reports p-value
-Provides similarity conclusion
+**Workflow**  
+- Estimate **tagwise dispersion** using edgeR’s empirical Bayes method.
+- Generate **Negative Binomial replicates**.  
+- Adjust **dropout** to match real dataset sparsity.  
 
-Dependency: edgeR
+**Comparison outputs**  
+- **Density plots**.  
+- **Per-replicate facet** plots.  
+- **Violin plots**.  
 
-6. simulate_DE_noise.R
+**Statistical tests**  
+- Performs **Kolmogorov–Smirnov tests**, reporting:  
+  - **D statistic**.  
+  - **p-value**.  
+  - A **similarity conclusion** between real and simulated distributions.  
 
-Simulates differential expression between control and tumor groups, incorporating biological noise.
+**Dependency**  
+- **edgeR (Bioconductor)**. 
 
-Features
-Uses edgeR dispersion estimates
-Assigns genes as:
-Upregulated
-Downregulated
-Non-differential
-Applies fold changes
-Simulates biological replicates
-Introduces Gaussian noise
+***
 
-Visualizes:
-Per-replicate density plots
-Noise vs no-noise comparison
+### **simulate_DE_noise.R**
 
-Returns:
-Simulated counts
-Noisy counts
-Fold change table
-Density plots
-This script allows realistic benchmarking of DE pipelines.
+Simulates **differential expression** between **control** and **tumor** groups, incorporating **biological noise**.
 
-Dependencies
+**Features**  
+- Uses **edgeR dispersion estimates**.
+- Assigns genes as **upregulated**, **downregulated**, or **non-differential**.  
+- Applies predefined **fold changes**.  
+- Simulates **biological replicates** under these fold changes.  
+- Introduces **Gaussian noise** to model additional biological variability. 
 
-Install required CRAN packages:
+**Visualizations**  
+- **Per-replicate density** plots.  
+- **Noise vs no-noise** comparisons.  
+
+**Returns**  
+- **Simulated counts**.  
+- **Noisy counts**.  
+- **Fold-change table**.  
+- **Density plots**.  
+
+This script enables **realistic benchmarking** of differential expression pipelines under controlled noise conditions. 
+
+***
+
+## Dependencies
+
+**CRAN packages**
+
+```r
 install.packages(c(
-  "tidyverse",
-  "reshape2",
-  "ggplot2",
-  "dplyr",
-  "tidyr",
-  "tibble",
-  "patchwork",
-  "RColorBrewer",
-  "scales",
-  "fitdistrplus",
-  "writexl"
+  "tidyverse", "reshape2", "ggplot2", "dplyr", "tidyr",
+  "tibble", "patchwork", "RColorBrewer", "scales",
+  "fitdistrplus", "writexl"
 ))
+```
 
-Install Bioconductor packages:
+**Bioconductor packages**
 
+```r
 if (!requireNamespace("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
 
 BiocManager::install(c("DESeq2", "edgeR"))
+```
